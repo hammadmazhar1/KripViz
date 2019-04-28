@@ -1,8 +1,10 @@
 ## kripke.py - Defines classes and methods for creating and modifying
 ## Kripke structures and evaluating Positional Dynamic Logic on
 ## such structures
-
-class KripStruct:
+import re
+necessityPattern = re.compile('\[*\]*')
+conditionalPattern = re.compile('\<*\>*')
+class KripFrame:
 	def __init__(self,states,formulas,programs):
 		self.states = {}
 		for state in states:
@@ -14,7 +16,13 @@ class KripStruct:
 		for program in programs:
 			self.programs[program.name] = program
 	def evalPDL(self,pdlString):
+		pdlSides=  pdlString.split('->')
+		if len(pdlSides) == 2:
+			leftSide = pdlSides[0]
+			rightSide = pdlSides[1]
 
+		else:
+			leftsSide = pdlSides[0]
 
 class Formula:
 	def __init__(self,form_string,states):
