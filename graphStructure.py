@@ -1,5 +1,5 @@
 from tkinter import *
-#from graphviz import Digraph
+from graphviz import Digraph
 class KripkeFrame:
 
     def __init__(self, states):
@@ -42,7 +42,7 @@ class KripkeFrame:
                 self.programs[programName] = [(state1, state2)]
             else:
                 if (state1, state2) in self.programs[programName]:
-                    raise ValueError("This edge is already in the frame")
+                    return
                 else:
                     self.programs[programName].append( (state1, state2))
         elif state1 is None and state2 is None:
@@ -57,7 +57,7 @@ class KripkeFrame:
         return "<states: {}> , formulas: {} , programs: {} ".format(self.states, self.formulas, self.programs)
 
 
-'''
+
 def genFrame(kripkeFrame):
     kripkeFrame.graph = Digraph('curGraph',format='gif')
     for state in kripkeFrame.states:
@@ -65,12 +65,15 @@ def genFrame(kripkeFrame):
         for formula_name in kripkeFrame.formulas.keys():
             state_list = kripkeFrame.formulas[formula_name]
             if state in state_list:
-                formula_string = formula_string+formula_name
+                formula_string = formula_string+formula_name+','
         kripkeFrame.graph.node(state,'%s \n %s'%(state,'{'+formula_string+'}'))
     for program in kripkeFrame.programs.keys():
-        kripkeFrame.graph.edges(kripkeFrame.programs[program])
+        program_edges = kripkeFrame.programs[program]
+        for prog_edge in program_edges:
+            kripkeFrame.graph.edge(prog_edge[0],prog_edge[1], label=program)
     kripkeFrame.graph.render()
-'''
+
+
 
 #CALLBACK FUNCTIONS
 
@@ -108,18 +111,23 @@ def initializeNewStructure():
     formed_frame.addFormula(formula1Name, formula1States)
     formed_frame.addFormula(formula2Name, formula2States)
     formed_frame.addFormula(formula3Name, formula3States)
-    formed_frame.addProgram(program1Name, program1State1, program1State1)
-    formed_frame.addProgram(program2Name, program2State1, program2State1)
-    formed_frame.addProgram(program3Name, program3State1, program3State1)
-    formed_frame.addProgram(program4Name, program4State1, program4State1)
+    formed_frame.addProgram(program1Name, program1State1, program1State2)
+    formed_frame.addProgram(program2Name, program2State1, program2State2)
+    formed_frame.addProgram(program3Name, program3State1, program3State2)
+    formed_frame.addProgram(program4Name, program4State1, program4State2)
     print(formed_frame)
 
     #make dot file for this frame
-
+    genFrame(formed_frame)
 
     #display formed file on canvas
-    gif1 = PhotoImage(file='test1.gif')
-    canvas.create_image(0,0,image=gif1, anchor=NW)
+    try:
+        gif1 = PhotoImage(file='curGraph.gv.gif')
+        canvas.create_image(0,0,image=gif1, anchor=NW)
+    except:
+        gif1 = PhotoImage(file='curGraph.gv.gif')
+        canvas.create_image(0,0,image=gif1, anchor=NW)
+    mainloop()
 
 def createGUI():
     global rootWindow
@@ -164,8 +172,8 @@ def createGUI():
     canvasBorderBuffer = 10
     canvas = Canvas(canvasAndGUI, height=canvasHeight, width=canvasWidth, relief=SUNKEN, borderwidth=2)
     canvas.pack(side=LEFT)
-    gif1 = PhotoImage(file='test2.gif')
-    canvas.create_image(0,0,image=gif1, anchor=NW)
+    # gif1 = PhotoImage(file='test2.gif')
+    # canvas.create_image(0,0,image=gif1, anchor=NW)
 
 
     guiFrame = Frame(canvasAndGUI)
