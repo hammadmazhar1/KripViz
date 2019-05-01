@@ -1,5 +1,5 @@
 from tkinter import Tk, Canvas, Frame, Button, Label, Entry, END, LEFT, RIGHT, SUNKEN
-
+from graphviz import Digraph
 class KripkeFrame:
 
     def __init__(self, states, formulas, programs):
@@ -15,6 +15,7 @@ class KripkeFrame:
         #e.g
         #{ "prog1" : [(startState0, endState0), (startState1, endState1)], "prog2" : [ (startState0) , (endState0) ] } 
         self.programs = {}
+        self.graph = None
 
 
     def addState(self, state):
@@ -22,6 +23,7 @@ class KripkeFrame:
             raise ValueError("state is already in the frame")
         else:
             self.states.append(state)
+
 
     def addFormula(self, formulaName, statesInFormula):
         if formulaName in self.formulas:
@@ -32,6 +34,7 @@ class KripkeFrame:
                 self.formulas[formulaName] = list(set().union(self.formulas[formulaName], statesInFormula))
         else:
             self.formulas[formulaName] = statesInFormula
+
 
     def addProgram(self, programName, state1 = None, state2 = None):
         if state1 is not None and state2 is not None:
@@ -51,8 +54,19 @@ class KripkeFrame:
             raise ValueError("Enter start state and end state (Both or None) ")
 
 
-def genFrame():
-    pass
+def genFrame(kripkeFrame):
+    kripkeFrame.graph = Digraph('curGraph',format='gif')
+    for state in kripkeFrame.states:
+        formula_string = '';
+        for formula_name in kripkeFrame.formulas.keys():
+            state_list = kripkeFrame.formulas[formula_name]
+            if state in state_list:
+                formula_string = formula_string+formula_name
+        kripkeFrame.graph.node(state,'%s \n %s'%(state,'{'+formula_string+'}'))
+    for program in kripkeFrame.programs.keys():
+        kripkeFrame.graph.edges(kripkeFrame.programs[program])
+    kripkeFrame.graph.render()
+    
 
 
 def initializeNewStructure():
@@ -136,3 +150,4 @@ def createGUI():
     canvasAndGUI.pack()
     statusLabel = Label(rootWindow)
     statusLabel.pack()
+createGUI()
