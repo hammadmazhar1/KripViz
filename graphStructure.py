@@ -108,13 +108,20 @@ def initializeNewStructure():
     program4State2 = program4State2Entry.get().strip()
 
     formed_frame = KripkeFrame(states)
-    formed_frame.addFormula(formula1Name, formula1States)
-    formed_frame.addFormula(formula2Name, formula2States)
-    formed_frame.addFormula(formula3Name, formula3States)
-    formed_frame.addProgram(program1Name, program1State1, program1State2)
-    formed_frame.addProgram(program2Name, program2State1, program2State2)
-    formed_frame.addProgram(program3Name, program3State1, program3State2)
-    formed_frame.addProgram(program4Name, program4State1, program4State2)
+    if formula1Name:
+        formed_frame.addFormula(formula1Name, formula1States)
+    if formula2Name:
+        formed_frame.addFormula(formula2Name, formula2States)
+    if formula3Name:
+        formed_frame.addFormula(formula3Name, formula3States)
+    if program1Name:
+        formed_frame.addProgram(program1Name, program1State1, program1State2)
+    if program2Name:
+        formed_frame.addProgram(program2Name, program2State1, program2State2)
+    if program3Name:
+        formed_frame.addProgram(program3Name, program3State1, program3State2)
+    if program4Name:
+        formed_frame.addProgram(program4Name, program4State1, program4State2)
     print(formed_frame)
 
     #make dot file for this frame
