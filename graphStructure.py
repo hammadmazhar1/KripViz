@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import font
 from graphviz import Digraph
 class KripkeFrame:
 
@@ -78,6 +79,7 @@ def genFrame(kripkeFrame):
 #CALLBACK FUNCTIONS
 
 def initializeNewStructure():
+    canvas.delete('all')
     #read all entry boxes
     
     states = statesEntry.get().split()
@@ -136,6 +138,13 @@ def initializeNewStructure():
         canvas.create_image(0,0,image=gif1, anchor=NW)
     mainloop()
 
+
+def addNewFormula():
+    pass
+
+def addNewProg():
+    pass
+
 def createGUI():
     global rootWindow
     global canvas
@@ -166,11 +175,11 @@ def createGUI():
     playerWin = 0
     computerWin = 0
     rootWindow = Tk()
-    rootWindow.configure(background='blue')
+    rootWindow.configure(background='white')
     rootWindow.title("Build Kripke Frames")
     
     canvasAndGUI = Frame(rootWindow)
-    canvasAndGUI.configure(background='green')
+    canvasAndGUI.configure(background='#ADD8E6')
 
 
     
@@ -201,7 +210,7 @@ def createGUI():
     formulaStateEntry = Entry(KripkeFormula1Frame,width= 10)
     formulaLabel.pack(side=LEFT)
     formulaEntry.pack(side = LEFT)
-    formulaStateLabel.pack(side = LEFT)
+    formulaStateLabel.pack(side = LEFT,pady = 5)
     formulaStateEntry.pack(side = LEFT)
 
     KripkeFormula2Frame = Frame(guiFrame)
@@ -211,7 +220,7 @@ def createGUI():
     formula2StateEntry = Entry(KripkeFormula2Frame,width= 10)
     formula2Label.pack(side=LEFT)
     formula2Entry.pack(side = LEFT)
-    formula2StateLabel.pack(side = LEFT)
+    formula2StateLabel.pack(side = LEFT, pady = 5)
     formula2StateEntry.pack(side = LEFT)
 
     
@@ -222,23 +231,28 @@ def createGUI():
     formula3StateEntry = Entry(KripkeFormula3Frame,width= 10)
     formula3Label.pack(side=LEFT)
     formula3Entry.pack(side = LEFT)
-    formula3StateLabel.pack(side = LEFT)
+    formula3StateLabel.pack(side = LEFT, pady = 5)
     formula3StateEntry.pack(side = LEFT)
-    
+
+    forButtonFrame = Frame(guiFrame)
+    createForButton = Button(forButtonFrame, text='Add Another Formula', command=addNewFormula)
+    createForButton.pack()
 
     KripkeProgram1Frame = Frame(guiFrame)
-    programNameLabel = Label(KripkeProgram1Frame, text='Program:', width= 8, height = 4)
+    programNameLabel = Label(KripkeProgram1Frame, text='Program:', width= 8)
     programNameEntry = Entry(KripkeProgram1Frame,width= 4)
     programState1Label = Label(KripkeProgram1Frame, text='goes from state: ', width= 14)
     programState1Entry =  Entry(KripkeProgram1Frame,width= 4)
     programState2Label = Label(KripkeProgram1Frame, text='to state: ', width= 8)
     programState2Entry =  Entry(KripkeProgram1Frame,width= 4)
-    programNameLabel.pack(side=LEFT)
+    programNameLabel.pack(side=LEFT, pady = 5)
     programNameEntry.pack(side = LEFT)
     programState1Label.pack(side = LEFT)
     programState1Entry.pack(side = LEFT)
     programState2Label.pack(side = LEFT)
     programState2Entry.pack(side = LEFT)
+
+   
 
     KripkeProgram2Frame = Frame(guiFrame)
     program2NameLabel = Label(KripkeProgram2Frame, text='Program:', width= 8)
@@ -247,7 +261,7 @@ def createGUI():
     program2State1Entry =  Entry(KripkeProgram2Frame,width= 4)
     program2State2Label = Label(KripkeProgram2Frame, text='to state: ', width= 8)
     program2State2Entry =  Entry(KripkeProgram2Frame,width= 4)
-    program2NameLabel.pack(side=LEFT)
+    program2NameLabel.pack(side=LEFT, pady = 5)
     program2NameEntry.pack(side = LEFT)
     program2State1Label.pack(side = LEFT)
     program2State1Entry.pack(side = LEFT)
@@ -261,7 +275,7 @@ def createGUI():
     program3State1Entry =  Entry(KripkeProgram3Frame,width= 4)
     program3State2Label = Label(KripkeProgram3Frame, text='to state: ', width= 8)
     program3State2Entry =  Entry(KripkeProgram3Frame,width= 4)
-    program3NameLabel.pack(side=LEFT)
+    program3NameLabel.pack(side=LEFT,pady = 5)
     program3NameEntry.pack(side = LEFT)
     program3State1Label.pack(side = LEFT)
     program3State1Entry.pack(side = LEFT)
@@ -270,13 +284,13 @@ def createGUI():
 
 
     KripkeProgram4Frame = Frame(guiFrame)
-    program4NameLabel = Label(KripkeProgram4Frame, text='Program:', width= 8, height = 4)
+    program4NameLabel = Label(KripkeProgram4Frame, text='Program:', width= 8)
     program4NameEntry = Entry(KripkeProgram4Frame,width= 4)
     program4State1Label = Label(KripkeProgram4Frame, text='goes from state: ', width= 14)
     program4State1Entry =  Entry(KripkeProgram4Frame,width= 4)
     program4State2Label = Label(KripkeProgram4Frame, text='to state: ', width= 8)
     program4State2Entry =  Entry(KripkeProgram4Frame,width= 4)
-    program4NameLabel.pack(side=LEFT)
+    program4NameLabel.pack(side=LEFT, pady = 5)
     program4NameEntry.pack(side = LEFT)
     program4State1Label.pack(side = LEFT)
     program4State1Entry.pack(side = LEFT)
@@ -284,30 +298,35 @@ def createGUI():
     program4State2Entry.pack(side = LEFT)
     #execButton = Button(guiFrame, text='Do it!', command=executePlayerMove)
 
+    progButtonFrame = Frame(guiFrame)
+    createProgButton = Button(progButtonFrame, text='Add Another Program', command=addNewProg)
+    createProgButton.pack()
 
-    createFrameButton = Button(guiFrame, text='Create Frame', command=initializeNewStructure)
+    boldFont = font.Font(size = 10, weight = "bold")
+    createFrameButton = Button(guiFrame, text='Create Frame', command=initializeNewStructure, background = 'green', font = boldFont)
 
     # replace the widget below with an Entry widget
-    #newHeapLabel = Label(guiFrame, text='New Frame')
+    #newHeapLabel = Label(guiFrame, text='New Frame')   
     #newHeapEntry = Entry(guiFrame)
-
-
     
 
     kripkeStatesDetails.pack()
+
     
     KripkeFormula1Frame.pack()
     KripkeFormula2Frame.pack()
     KripkeFormula3Frame.pack()
     #KripkeFormula4Frame.pack()
+
+    forButtonFrame.pack(pady = 6)
     
     KripkeProgram1Frame.pack()
     KripkeProgram2Frame.pack()
     KripkeProgram3Frame.pack()
     KripkeProgram4Frame.pack()
-    
-    
-    createFrameButton.pack()
+
+    progButtonFrame.pack(pady = 10)
+    createFrameButton.pack(pady = 15)
     
    
     guiFrame.pack(side=RIGHT)
