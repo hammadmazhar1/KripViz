@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import font
 from graphviz import Digraph
+import re
+
 class KripkeFrame:
 
     def __init__(self, states):
@@ -18,7 +20,15 @@ class KripkeFrame:
         self.programs = {}
         self.graph = None
 
-
+    def getStates(self):
+        return self.states
+    
+    def getFormulas(self):
+        return self.formulas
+    
+    def getPrograms(self):
+        return self.programs
+    
     def addState(self, state):
         if state in self.states:
             raise ValueError("state is already in the frame")
@@ -80,6 +90,7 @@ def genFrame(kripkeFrame):
 
 def initializeNewStructure():
     canvas.delete('all')
+    global formed_frame
     #read all entry boxes
     
     states = statesEntry.get().split()
@@ -145,6 +156,151 @@ def addNewFormula():
 def addNewProg():
     pass
 
+def evaluatePDL():
+    global formed_frame
+    states = formed_frame.getStates()
+    print("states", states)
+    programs = formed_frame.getPrograms()
+    print("programs", programs)
+    formulas = formed_frame.getFormulas()
+    print("formulas", formulas)
+    
+    pdl_entered = pdlEntry.get()
+
+      
+    if formed_frame != None:
+        if pdl_entered in formulas.keys():
+            answerLabel.configure( text = "The formula is satisfiable.")
+            
+    modalTruth = re.findall('^\[.\].', pdl_entered)
+    someTruth = re.findall('<.>.', pdl_entered)
+    implicationWmodal = re.findall('->\[.\].', pdl_entered)
+    
+    if modalTruth != []:
+        #any execution of this program
+        executed_program = pdl_entered[1]
+        print("executed_program", executed_program)
+        #must satisfy this formula
+        must_satisfy = pdl_entered[3]
+        print("must_satisfy", must_satisfy )
+
+        #dictionary, where keys are the formulas and values are lists containing states where formulas are true
+        #e.g
+        # {'f1' : [ 's1', 's3' ] , 'f2' : ['s2', 's4' ] , 'f3' : ['s6' ] }
+        
+        #adjacency list, with each programName as key and a list (of edges as tuples).
+        #e.g
+        #{ "prog1" : [(startState0, endState0), (startState1, endState1)], "prog2" : [ (startState0) , (endState0) ] }
+        
+        satisfiable = 0
+        #take out the states where the formula:must_satisfy is true
+        statesSatisfied = formulas[must_satisfy]
+        
+        
+        #for each state in frame, check if program is being executed from it and ending in a state that satisfies must_satisfy
+        for state in states:
+            execution_exists = 0
+            listOfTuples = programs[executed_program]
+            for edge in listOfTuples:
+                if edge[0] == state:
+                    execution_exists = 1
+                    endState = edge[1]
+                    if endState in statesSatisfied:
+                        satisfiable = satisfiable + 1
+            if execution_exists == 0:
+                satisfiable = satisfiable + 1
+            
+        if satisfiable == 0:
+            print("PDL is not satisfiable in this Kripke Frame.")
+            answerLabel.configure(text = "PDL is not satisfiable in this Kripke Frame.")
+        elif satisfiable != len(states):
+            print("PDL is satisfiable, but not valid in this Kripke Frame")
+            answerLabel.configure(text = "PDL is satisfiable, but not valid in this Kripke Frame.")
+        else:
+            print("PDL is satisfiable and valid")
+            answerLabel.configure(text = "PDL is satisfiable and valid in this Kripke Frame.")
+            
+    elif someTruth != []:
+        #some execution of this program
+        executed_program = pdl_entered[1]
+        print("executed_program", executed_program)
+        #satisfies this formula
+        must_satisfy = pdl_entered[3]
+        print("at least once satisfies", must_satisfy)
+        
+        #take out the states where the formula:must_satisfy is true
+        statesSatisfied = formulas[must_satisfy]
+        
+        
+        #for each state in frame, check if program is being executed from it and ending in a state that satisfies must_satisfy
+        for state in states:
+            execution_exists = 0
+            listOfTuples = programs[executed_program]
+            for edge in listOfTuples:
+                if edge[0] == state:
+                    execution_exists = 1
+                    endState = edge[1]
+                    if endState in statesSatisfied:
+                        satisfied = 1
+            if execution_exists == 0:
+                satisfied = 1
+            
+        if satisfiable == 0:
+            print("PDL is not satisfiable in this Kripke Frame.")
+            answerLabel.configure(text = "PDL is not satisfiable in this Kripke Frame.")
+        else:
+            print("PDL is satisfiable and valid")
+            answerLabel.configure(text = "PDL is satisfiable and valid in this Kripke Frame.")
+    elif implicationWmodal != []:
+         #dictionary, where keys are the formulas and values are lists containing states where formulas are true
+        #e.g
+        # {'f1' : [ 's1', 's3' ] , 'f2' : ['s2', 's4' ] , 'f3' : ['s6' ] }
+        
+        #adjacency list, with each programName as key and a list (of edges as tuples).
+        #e.g
+        #{ "prog1" : [(startState0, endState0), (startState1, endState1)], "prog2" : [ (startState0) , (endState0) ] }
+
+        firstFormula = pdl_entered[0]
+        print("firstFormula", firstFormula)
+        executed_program = pdl_entered[4]
+        print("executed_program", executed_program)
+        must_satisfy = pdl_entered[6]
+        print("must_satisfy", must_satisfy)
+
+        #take out states where firstFormula is True
+        checkStates = formulas[firstFormula]
+
+        #for each of these states, check if all executions are satisfied
+        satisfiable = 0
+        #take out the states where the formula:must_satisfy is true
+        statesSatisfied = formulas[must_satisfy]
+        
+        
+        #for each state in frame, check if program is being executed from it and ending in a state that satisfies must_satisfy
+        for state in statesSatisfied:
+            execution_exists = 0
+            listOfTuples = programs[executed_program]
+            for edge in listOfTuples:
+                if edge[0] == state:
+                    execution_exists = 1
+                    endState = edge[1]
+                    if endState in statesSatisfied:
+                        satisfiable = satisfiable + 1
+            if execution_exists == 0:
+                satisfiable = satisfiable + 1
+            
+        if satisfiable == 0:
+            print("PDL is not satisfiable in this Kripke Frame.")
+            answerLabel.configure(text = "PDL is not satisfiable in this Kripke Frame.")
+        elif satisfiable != len(statesSatisfied):
+            print("PDL is satisfiable, but not valid in this Kripke Frame")
+            answerLabel.configure(text = "PDL is satisfiable, but not valid in this Kripke Frame.")
+        else:
+            print("PDL is satisfiable and valid")
+            answerLabel.configure(text = "PDL is satisfiable and valid in this Kripke Frame.")
+        
+        
+
 def createGUI():
     global rootWindow
     global canvas
@@ -168,12 +324,10 @@ def createGUI():
     global program4State1Entry
     global program4State2Entry
 
+    global pdlEntry
+    global answerLabel
+    global formed_frame
 
-    #maxBallSize = 50
-
-
-    playerWin = 0
-    computerWin = 0
     rootWindow = Tk()
     rootWindow.configure(background='white')
     rootWindow.title("Build Kripke Frames")
@@ -183,17 +337,35 @@ def createGUI():
 
 
     
-    canvasHeight = 620
-    canvasWidth = 620
+   
+    canvasAndEvalFrame = Frame(canvasAndGUI)
+
+    canvasHeight = 550
+    canvasWidth = 700
     canvasBorderBuffer = 10
-    canvas = Canvas(canvasAndGUI, height=canvasHeight, width=canvasWidth, relief=SUNKEN, borderwidth=2)
-    canvas.pack(side=LEFT)
+    canvas = Canvas(canvasAndEvalFrame, height=canvasHeight, width=canvasWidth, relief=SUNKEN, borderwidth=2)
+
     # gif1 = PhotoImage(file='test2.gif')
     # canvas.create_image(0,0,image=gif1, anchor=NW)
 
+    formed_frame = None
+    evaluate_pdl = Frame(canvasAndEvalFrame)
+    pdlLabel = Label(evaluate_pdl, text = 'Enter PDL Fragment:', width = 15, height = 4)
+    pdlLabel.pack(side = LEFT)
+    pdlEntry = Entry(evaluate_pdl,width = 40)
+    pdlEntry.pack(side = LEFT, padx = 7)
+    boldFont = font.Font(size = 10, weight = "bold")
+    evalButton = Button(evaluate_pdl, text = "Evaluate", command = evaluatePDL, background = 'green', font = boldFont)
+    evalButton.pack(side = LEFT)
+    boldFont = font.Font(weight = "bold")
+    answerLabel = Label(evaluate_pdl, text = "    ", fg= "blue")
+    answerLabel.pack(side = LEFT, padx = 5)
 
+
+    
     guiFrame = Frame(canvasAndGUI)
-    wonBoardLabel = Label(guiFrame, text='Enter Details',width= 50, height = 4)
+    boldFont = font.Font(size = 10, weight = "bold",underline = True)
+    wonBoardLabel = Label(guiFrame, text='Enter Details',width= 50, height = 2, font  = boldFont)
     wonBoardLabel.pack()
 
    
@@ -330,6 +502,11 @@ def createGUI():
     
    
     guiFrame.pack(side=RIGHT)
+
+    canvas.pack()
+    evaluate_pdl.pack()
+    canvasAndEvalFrame.pack(side=LEFT)
+    
     canvasAndGUI.pack()
 
 
