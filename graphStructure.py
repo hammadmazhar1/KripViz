@@ -167,10 +167,18 @@ def evaluatePDL():
     
     pdl_entered = pdlEntry.get()
 
-      
-    if formed_frame != None:
-        if pdl_entered in formulas.keys():
-            answerLabel.configure( text = "The formula is satisfiable.")
+
+    if pdl_entered in formulas.keys():
+        validity = 1
+        for state in states:
+            if state not in formulas[pdl_entered]:
+                validity = 0
+        if validity == 1:
+            answerLabel.configure( text = "The formula is satisfiable and valid.")
+        else:
+            answerLabel.configure( text = "The formula is satisfiable, not valid.")
+    else:
+        answerLabel.configure( text = "The formula is not present in the Kripke Frame.")
             
     modalTruth = re.findall('^\[.\].', pdl_entered)
     someTruth = re.findall('<.>.', pdl_entered)
@@ -269,6 +277,7 @@ def evaluatePDL():
 
         #take out states where firstFormula is True
         checkStates = formulas[firstFormula]
+        print(checkStates)
 
         #for each of these states, check if all executions are satisfied
         satisfiable = 0
@@ -277,7 +286,7 @@ def evaluatePDL():
         
         
         #for each state in frame, check if program is being executed from it and ending in a state that satisfies must_satisfy
-        for state in statesSatisfied:
+        for state in checkStates:
             execution_exists = 0
             listOfTuples = programs[executed_program]
             for edge in listOfTuples:
@@ -288,11 +297,12 @@ def evaluatePDL():
                         satisfiable = satisfiable + 1
             if execution_exists == 0:
                 satisfiable = satisfiable + 1
-            
+        print("satisfiable",satisfiable)
+        print("valid if",  len(statesSatisfied))
         if satisfiable == 0:
             print("PDL is not satisfiable in this Kripke Frame.")
             answerLabel.configure(text = "PDL is not satisfiable in this Kripke Frame.")
-        elif satisfiable != len(statesSatisfied):
+        elif satisfiable != len(checkStates):
             print("PDL is satisfiable, but not valid in this Kripke Frame")
             answerLabel.configure(text = "PDL is satisfiable, but not valid in this Kripke Frame.")
         else:
