@@ -166,6 +166,9 @@ def evaluatePDL():
     print("formulas", formulas)
     
     pdl_entered = pdlEntry.get()
+    modalTruth = re.findall('^\[.\].', pdl_entered)
+    someTruth = re.findall('<.>.', pdl_entered)
+    implicationWmodal = re.findall('->\[.\].', pdl_entered)
 
 
     if pdl_entered in formulas.keys():
@@ -177,14 +180,8 @@ def evaluatePDL():
             answerLabel.configure( text = "The formula is satisfiable and valid.")
         else:
             answerLabel.configure( text = "The formula is satisfiable, not valid.")
-    else:
-        answerLabel.configure( text = "The formula is not present in the Kripke Frame.")
-            
-    modalTruth = re.findall('^\[.\].', pdl_entered)
-    someTruth = re.findall('<.>.', pdl_entered)
-    implicationWmodal = re.findall('->\[.\].', pdl_entered)
     
-    if modalTruth != []:
+    elif modalTruth != []:
         #any execution of this program
         executed_program = pdl_entered[1]
         print("executed_program", executed_program)
@@ -241,6 +238,7 @@ def evaluatePDL():
         
         
         #for each state in frame, check if program is being executed from it and ending in a state that satisfies must_satisfy
+        satisfied = 0
         for state in states:
             execution_exists = 0
             listOfTuples = programs[executed_program]
@@ -253,7 +251,7 @@ def evaluatePDL():
             if execution_exists == 0:
                 satisfied = 1
             
-        if satisfiable == 0:
+        if satisfied == 0:
             print("PDL is not satisfiable in this Kripke Frame.")
             answerLabel.configure(text = "PDL is not satisfiable in this Kripke Frame.")
         else:
@@ -308,8 +306,9 @@ def evaluatePDL():
         else:
             print("PDL is satisfiable and valid")
             answerLabel.configure(text = "PDL is satisfiable and valid in this Kripke Frame.")
-        
-        
+
+    else:
+        answerLabel.configure(text = "Cannot evaluate this yet")
 
 def createGUI():
     global rootWindow
